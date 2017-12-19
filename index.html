@@ -383,7 +383,7 @@
         theta = 0.0;
         distance = 200.0;
 
-        for (i=0; i<nPots; i++) {
+        for (i=0; i<nPots-1; i++) {
           var potTform = new THREE.Object3D();
           var teapotGeometry = new THREE.TeapotBufferGeometry( teapotSize,
             tess,
@@ -393,23 +393,33 @@
             effectController.fitLid,
             ! effectController.nonblinn );
 
-          t = new THREE.Mesh(
-            teapotGeometry,
-            shading === "wireframe" ? wireMaterial : (
-            shading === "flat" ? flatMaterial : (
-            shading === "smooth" ? gouraudMaterial : (
-            shading === "glossy" ? phongMaterial : (
-            shading === "textured" ? texturedMaterial : reflectiveMaterial ) ) ) ) );	// if no match, pick Phong
+          var mat =
+              shading === "wireframe" ? wireMaterial : (
+              shading === "flat" ? flatMaterial : (
+              shading === "smooth" ? gouraudMaterial : (
+              shading === "glossy" ? phongMaterial : (
+              shading === "textured" ? texturedMaterial : reflectiveMaterial ) ) ) ); // if no match, pick Phong
+
+          if (!i) {
+            mat = wireMaterial;
+          }
+
+          t = new THREE.Mesh( teapotGeometry, mat );
+//          t.matrixAutoUpdate = false;
 
           xpos = distance * Math.cos(theta);
           ypos = distance * Math.sin(theta);
 
-          t.rotation.y = theta;
+          // i dont think this does anything
+          //t.rotation.y = theta;
 
           potTform.add(t);
           potTform.translateX(xpos);
           potTform.translateY(ypos);
-          potTform.rotation.z = -theta;
+          potTform.rotation.z = theta - 0.5*Math.PI;
+          potTform.scale.x = 0.8;
+          potTform.scale.y = 0.8;
+          potTform.scale.z = 0.8;
 
           theta = theta + dTheta;
 
@@ -431,7 +441,8 @@
           var angle = 0.0;
           var delta = 2.0 * Math.PI / (potList.length-1);
           for (i=0; i<potList.length; i++) {
-            potList[i].rotation.y = angle;
+            //potList[i].rotation.y = angle;
+            potList[i].rotation.y = 0.0;
             angle += delta;
           }
         }
@@ -456,7 +467,8 @@
             var angle = teapotAngle;
             var delta = 2.0 * Math.PI / (potList.length-1);
             for (i=0; i< potList.length; i++) {
-              potList[i].rotation.y = angle;
+              //potList[i].rotation.y = angle;
+              potList[i].rotation.y = teapotAngle;
               angle += delta;
             }
           }
